@@ -1,5 +1,5 @@
 import { Action, InitializeModule, State, UndefinedAction } from "guifast_shared";
-import { commandWindowReducer } from "guifast/client/reducer";
+import { commandWindowReducer } from "guifast/client/renderer_reducer";
 import { GuifastState } from "guifast/client/state";
 
 const noop = (state: GuifastState, action: Action): GuifastState => {
@@ -10,7 +10,7 @@ const noop = (state: GuifastState, action: Action): GuifastState => {
     }
 };
 
-export function reducer(
+export function rendererReducer(
     state: GuifastState | undefined,
     action: Action = UndefinedAction.make(),
     guifastState: State

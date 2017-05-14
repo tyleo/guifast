@@ -5,6 +5,7 @@
             "name": "command_window_guifast_container"
         }
     ],
-    "renderer_reducer": { "name": "reducer", "path": "guifast/guifast/client/reducer/reducer.js" },
+    "main_reducer": { "name": "mainReducer", "path": "guifast/guifast/server/main_reducer.js" },
+    "renderer_reducer": { "name": "rendererReducer", "path": "guifast/guifast/client/renderer_reducer/renderer_reducer.js" },
     "startup_windows": [ "guifast command_window_guifast_container" ]
 }
