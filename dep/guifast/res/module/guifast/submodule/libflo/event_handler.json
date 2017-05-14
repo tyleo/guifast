@@ -1,0 +1,20 @@
+{
+    "handlers": [
+        {
+            "event": { "module": "libflo", "name": "construct" },
+            "function": { "module": "guifast", "name": "construct" }
+        },
+        {
+            "event": { "module": "libflo", "name": "post_construct" },
+            "function": { "module": "guifast", "name": "post_construct" }
+        },
+        {
+            "event": { "module": "libflo_action", "name": "construct" },
+            "function": { "module": "guifast", "name": "action_construct" }
+        },
+        {
+            "event": { "module": "libflo_action", "name": "parse" },
+            "function": { "module": "graphflo", "name": "parse" }
+        }
+    ]
+}

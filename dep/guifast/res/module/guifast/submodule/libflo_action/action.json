@@ -1,0 +1,6 @@
+{
+    "actions": [
+        "backend_initialized",
+        "command"
+    ]
+}

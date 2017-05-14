@@ -1,0 +1,10 @@
+{
+    "components": [
+        {
+            "require_info": { "name": "CommandWindowGuifastContainer", "path": "guifast/guifast/client/component/command_window_guifast_container/command_window_guifast_container.js" },
+            "name": "command_window_guifast_container"
+        }
+    ],
+    "renderer_reducer": { "name": "reducer", "path": "guifast/guifast/client/reducer/reducer.js" },
+    "startup_windows": [ "guifast command_window_guifast_container" ]
+}

@@ -1,0 +1,30 @@
+{
+  "name": "guifast",
+  "version": "0.1.0",
+  "description": "Provides typescript frontends for libflo.",
+  "main": "src/main.js",
+  "target": "es6",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron src/main.js"
+  },
+  "keywords": [
+    "guifast",
+    "javascript",
+    "rust"
+  ],
+  "author": "Tyler Wolf Leonhardt",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/electron": "^1.4.37",
+    "@types/electron-devtools-installer": "^2.0.2",
+    "@types/node": "^7.0.13",
+    "@types/react": "^15.0.22",
+    "@types/react-dom": "^15.5.0",
+    "@types/react-redux": "^4.4.39",
+    "@types/redux": "^3.6.0",
+    "devtron": "^1.4.0",
+    "electron": "^1.6.5",
+    "electron-devtools-installer": "^2.2.0"
+  }
+}

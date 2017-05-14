@@ -1,0 +1,30 @@
+{
+  "name": "guifast_shared",
+  "version": "0.1.0",
+  "description": "Shared frontend logic for guifast.",
+  "main": "src/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "guifast",
+    "javascript",
+    "rust"
+  ],
+  "author": "Tyler Wolf Leonhardt",
+  "license": "MIT",
+  "dependencies": {
+    "binary-search-bounds": "^2.0.3",
+    "react": "^15.5.4",
+    "react-dom": "^15.5.4",
+    "react-redux": "^5.0.4",
+    "redux": "^3.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^7.0.13",
+    "@types/react": "^15.0.22",
+    "@types/react-dom": "^15.5.0",
+    "@types/react-redux": "^4.4.39",
+    "@types/redux": "^3.6.0"
+  }
+}

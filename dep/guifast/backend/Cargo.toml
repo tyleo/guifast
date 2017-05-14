@@ -1,0 +1,29 @@
+[dependencies]
+serde_json = "1.0"
+
+[dependencies.guifast_shared]
+path = "..\\..\\guifast_shared\\backend"
+version = "0.1"
+
+[dependencies.libflo_action_std]
+path = "..\\..\\..\\..\\libflo\\dep\\libflo_action_std"
+version = "0.1"
+
+[dependencies.libflo_std]
+path = "..\\..\\..\\..\\libflo\\dep\\libflo_std"
+version = "0.1"
+
+[lib]
+crate-type = ["dylib"]
+
+[package]
+authors = ["Tyler Wolf Leonhardt <tyler.wolf.leonhardt@gmail.com>"]
+description = "Backend support for guifast."
+exclude = [
+    ".gitignore",
+    "README",
+    "test/**"
+]
+license = "MIT"
+name = "guifast"
+version = "0.1.0"

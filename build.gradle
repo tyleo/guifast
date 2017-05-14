@@ -1,0 +1,123 @@
+// funcs
+import java.nio.file.Files;
+
+def create_symlink = {
+    from, to ->
+        def to_file = file(to);
+        if (!to_file.exists()) {
+            def from_file = file(from);
+            Files.createSymbolicLink(to_file.toPath(), from_file.toPath());
+        }
+}
+
+// guifast_backend
+task guifast_backend_cargo_build(type: Exec) {
+    commandLine "cargo.exe", "build"
+    workingDir "dep/guifast/backend"
+}
+
+task guifast_backend_symlink() {
+    doLast {
+        create_symlink(
+            "dep\\guifast\\backend\\target\\debug\\guifast.dll",
+            "dep\\guifast\\res\\module\\guifast\\submodule\\libflo\\guifast.dll"
+        )
+    }
+}
+
+task guifast_backend_build(dependsOn: [guifast_backend_cargo_build, guifast_backend_symlink])
+
+guifast_backend_symlink.mustRunAfter guifast_backend_cargo_build
+
+// guifast_frontend
+task guifast_frontend_npm_install(type: Exec) {
+    commandLine "npm.cmd", "install"
+    workingDir "dep/guifast/frontend"
+}
+
+task guifast_frontend_init_symlink() {
+    doLast {
+        create_symlink(
+            "dep\\guifast\\frontend\\src",
+            "dep\\guifast\\frontend\\node_modules\\guifast"
+        )
+    }
+}
+
+task guifast_frontend_init(dependsOn: [
+    guifast_frontend_npm_install,
+    guifast_frontend_init_symlink
+])
+
+task guifast_frontend_tsc_build(type: Exec) {
+    commandLine "tsc.cmd"
+    workingDir "dep/guifast/frontend"
+}
+
+task guifast_frontend_symlink() {
+    doLast {
+        create_symlink(
+            "dep\\guifast\\frontend\\node_modules",
+            "dep\\guifast\\res\\module\\guifast\\submodule\\guifast\\guifast"
+        )
+    }
+}
+
+task guifast_frontend_build(dependsOn: [guifast_frontend_tsc_build, guifast_frontend_symlink])
+
+guifast_frontend_init_symlink.mustRunAfter guifast_frontend_npm_install
+
+guifast_frontend_symlink.mustRunAfter guifast_frontend_tsc_build
+
+// guifast
+task guifast_build(dependsOn: [guifast_backend_build, guifast_frontend_build])
+
+task guifast_init(dependsOn: [guifast_frontend_init])
+
+// guifast_shared_backend
+task guifast_shared_backend_build(type: Exec) {
+    commandLine "cargo.exe", "build"
+    workingDir "dep/guifast_shared/backend"
+}
+
+// guifast_shared_frontend
+task guifast_shared_frontend_npm_install(type: Exec) {
+    commandLine "npm.cmd", "install"
+    workingDir "dep/guifast_shared/frontend"
+}
+
+task guifast_shared_frontend_init_symlink() {
+    doLast {
+        create_symlink(
+            "dep\\guifast_shared\\frontend\\src",
+            "dep\\guifast_shared\\frontend\\node_modules\\guifast_shared"
+        )
+
+        create_symlink(
+            "dep\\guifast_shared\\frontend\\src",
+            "dep\\guifast\\frontend\\node_modules\\guifast_shared"
+        )
+    }
+}
+
+task guifast_shared_frontend_init(dependsOn: [
+    guifast_shared_frontend_npm_install,
+    guifast_shared_frontend_init_symlink
+])
+
+task guifast_shared_frontend_build(type: Exec) {
+    commandLine "tsc.cmd"
+    workingDir "dep/guifast_shared/frontend"
+}
+
+guifast_shared_frontend_init_symlink.mustRunAfter guifast_shared_frontend_npm_install
+
+// guifast_shared
+task guifast_shared_build(dependsOn: [guifast_shared_frontend_build])
+
+task guifast_shared_init(dependsOn: [guifast_shared_frontend_init])
+
+// project
+task build(dependsOn: [guifast_build, guifast_shared_build])
+
+task init(dependsOn: [guifast_init, guifast_shared_init])

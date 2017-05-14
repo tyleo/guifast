@@ -1,0 +1,1 @@
+export const MAX_CONTINUOUS_INT: number = 9007199254740991;

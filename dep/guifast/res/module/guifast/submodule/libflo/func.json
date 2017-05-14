@@ -1,0 +1,11 @@
+{
+    "lib": {
+        "platforms": [{ "os": "windows", "path": "guifast.dll" }],
+        "functions": [
+            { "symbol": "action_construct", "input": "any" },
+            { "symbol": "construct", "input": "any" },
+            { "symbol": "parse", "input": "any", "output": "any" },
+            { "symbol": "post_construct" }
+        ]
+    }
+}
