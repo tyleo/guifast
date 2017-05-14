@@ -1,21 +1,5 @@
 import * as electron from 'electron';
-import installExtension, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer'
 import { getEnvironment } from "guifast/server";
-
-try {
-    require("devtron").install();
-    console.log('Added devtron extension.')
-} catch (err) {
-    console.log('Error installing devtron extension: ', err);
-}
-
-installExtension(REACT_DEVELOPER_TOOLS)
-    .then(name => console.log('Added react extension.'))
-    .catch(err => console.log('Error installing react extension: ', err));
-
-installExtension(REDUX_DEVTOOLS)
-    .then(name => console.log('Added redux extension.'))
-    .catch(err => console.log('Error installing redux extension: ', err));
 
 // Module to control application life.
 const app = electron.app;

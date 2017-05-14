@@ -1,4 +1,5 @@
 import * as electron from "electron";
+import installExtension, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer'
 import React from "guifast_shared/node_module/react";
 import ReactDom from "guifast_shared/node_module/react_dom"
 import Redux from "guifast_shared/node_module/redux";
@@ -21,6 +22,21 @@ import {
 } from "guifast_shared";
 
 import { WindowInitialized } from "guifast_shared/action/window_initialized";
+
+try {
+    require("devtron").install();
+    console.log('Added devtron extension.')
+} catch (err) {
+    console.log('Error installing devtron extension: ', err);
+}
+
+installExtension(REACT_DEVELOPER_TOOLS)
+    .then(name => console.log('Added react extension.'))
+    .catch(err => console.log('Error installing react extension: ', err));
+
+installExtension(REDUX_DEVTOOLS)
+    .then(name => console.log('Added redux extension.'))
+    .catch(err => console.log('Error installing redux extension: ', err));
 
 setError(message => console.log(message));
 
