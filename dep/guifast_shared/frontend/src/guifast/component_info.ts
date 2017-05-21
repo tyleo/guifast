@@ -1,6 +1,6 @@
-import { RequireInfo } from "guifast_shared";
+import * as Guifast from "guifast_shared";
 
 export interface ComponentInfo {
-    readonly requireInfo: RequireInfo;
+    readonly requireInfo: Guifast.RequireInfo;
     readonly name: string;
 }

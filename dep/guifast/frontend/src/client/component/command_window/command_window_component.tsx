@@ -2,8 +2,7 @@ import React from "guifast_shared/node_module/react";
 import { CommandWindowLineCss, CommandWindowCss } from "guifast/client/component";
 import { CommandWindowState } from "guifast/client/state";
 
-import { Command } from "guifast_shared/action/command";
-import { sendToGuifast } from "guifast_shared/guifast/send_to_guifast";
+import * as Guifast from "guifast_shared";
 
 const onKeyDown = (e: React.KeyboardEvent<any>) => {
     if (e.key === "Enter") {
@@ -14,7 +13,7 @@ const onKeyDown = (e: React.KeyboardEvent<any>) => {
 
         text = text.trim();
 
-        sendToGuifast(Command.make(text));
+        Guifast.sendToMain(Guifast.Command.make(text));
     }
 };
 

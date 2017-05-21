@@ -1,10 +1,10 @@
 import React from "guifast_shared/node_module/react"
-import { Component, State } from "guifast_shared";
+import * as Guifast from "guifast_shared";
 import { CommandWindowComponent } from "guifast/client/component";
-import { GuifastState } from "guifast/client/state";
+import { GuifastRendererState } from "guifast/client/state";
 
-export const CommandWindowGuifastContainer: Component = (state: State) => {
-    const guifastState = state.modulesState["guifast"]! as GuifastState;
+export const CommandWindowGuifastContainer: Guifast.Component = (state: Guifast.RootRendererState) => {
+    const guifastState = state.rendererStates["guifast"]! as GuifastRendererState;
     const commandWindowState = guifastState.commandWindowState;
 
     return CommandWindowComponent(commandWindowState);

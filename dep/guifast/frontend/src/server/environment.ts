@@ -1,50 +1,16 @@
 import * as electron from 'electron';
 import Redux from "guifast_shared/node_module/redux";
-import {
-    Action,
-    ActionMapper,
-    BackendInitialized,
-    Command,
-    compactedArray,
-    CompactedArray,
-    compactedArrayAdd,
-    compactedArrayRemove,
-    error,
-    ForwardAction,
-    fromRequireInfo,
-    sendToGuifast,
-    sendToLibflo,
-    sendToSharedStore,
-    sendToStore,
-    Guifast,
-    GuifastConfigSerde,
-    MainReducer,
-    ModuleMapper,
-    ReconcileState,
-    reducer,
-    setError,
-    setSendToGuifast,
-    setSendToLibflo,
-    setSendToSharedStore,
-    setSendToStore,
-    State,
-    String,
-    StringMap,
-    TopMenuSerde,
-    WindowInitialized,
-    WindowUninitialized,
-    WindowRequested
-} from "guifast_shared";
+import * as Guifast from "guifast_shared";
 import { LibfloClient } from "guifast/server";
 
 const BrowserWindow = electron.BrowserWindow;
 
-const addFunctionsToMenu = (menuTemplate: TopMenuSerde, moduleName: string): Electron.MenuItemOptions => {
+const addFunctionsToMenu = (menuTemplate: Guifast.TopMenuSerde, moduleName: string): Electron.MenuItemOptions => {
     const result: Electron.MenuItemOptions = {};
     result.label = menuTemplate.label;
 
     if (menuTemplate.action !== null) {
-        result.click = () => { sendToGuifast(menuTemplate.action!); };
+        result.click = () => { Guifast.sendToMain(menuTemplate.action!); };
     }
 
     if (menuTemplate.submenu !== null) {
@@ -57,7 +23,7 @@ const addFunctionsToMenu = (menuTemplate: TopMenuSerde, moduleName: string): Ele
     return result;
 };
 
-const createMenuTemplate = (guifastMenuTemplate: Array<TopMenuSerde>, moduleName: string): Array<Electron.MenuItemOptions> => {
+const createMenuTemplate = (guifastMenuTemplate: Array<Guifast.TopMenuSerde>, moduleName: string): Array<Electron.MenuItemOptions> => {
     const result = [];
     for (const submenuTemplate of guifastMenuTemplate) {
         result.push(addFunctionsToMenu(submenuTemplate, moduleName));
@@ -67,32 +33,32 @@ const createMenuTemplate = (guifastMenuTemplate: Array<TopMenuSerde>, moduleName
 
 export class Environment {
     private libfloClientField: LibfloClient | undefined = undefined;
-    private guifastField: Guifast | undefined = undefined;
-    private mainReducersField: StringMap<MainReducer> = { };
-    private storeField: Redux.Store<State | undefined> = Redux.createStore(reducer);
-    private windowsField: CompactedArray<[any, boolean]> = compactedArray<[any, boolean]>();
+    private guifastField: Guifast.Guifast | undefined = undefined;
+    private mainStoreField: Guifast.RootMainState = { moduleNames: [], reducersAndStates: { } };
+    private rendererStoreField: Redux.Store<Guifast.RootRendererState | undefined> = Redux.createStore(Guifast.rootRendererReducer);
+    private windowsField: Guifast.CompactedArray<[any, boolean]> = Guifast.compactedArray<[any, boolean]>();
 
-    public get config(): GuifastConfigSerde | undefined {
-        return this.store.getState()!.config;
+    public get config(): Guifast.GuifastConfigSerde | undefined {
+        return this.rendererStore.getState()!.config;
     }
 
     public get libfloClient(): LibfloClient | undefined {
         return this.libfloClientField;
     }
 
-    public get guifast(): Guifast | undefined {
+    public get guifast(): Guifast.Guifast | undefined {
         return this.guifastField;
     }
 
-    public get store(): Redux.Store<State | undefined> {
-        return this.storeField;
+    public get rendererStore(): Redux.Store<Guifast.RootRendererState | undefined> {
+        return this.rendererStoreField;
     }
 
-    public get windows(): CompactedArray<any> {
+    public get windows(): Guifast.CompactedArray<any> {
         return this.windowsField;
     }
 
-    public createStrIdAction(value: Action): Action {
+    public createStrIdAction(value: Guifast.Action): Guifast.Action {
         let originalActionType = value.type;
         if (this.guifast !== undefined) {
             originalActionType = this.guifast.actionMapper.getTypeString(originalActionType);
@@ -105,7 +71,7 @@ export class Environment {
         const window = new BrowserWindow({ width: 800, height: 600 });
         let windowIdCopy = 0;
 
-        this.windowsField = compactedArrayAdd(
+        this.windowsField = Guifast.compactedArrayAdd(
             this.windows,
             (windowId: number) => {
                 windowIdCopy = windowId;
@@ -121,8 +87,8 @@ export class Environment {
                 // Dereference the window object, usually you would store windows
                 // in an array if your app supports multi windows, this is the time
                 // when you should delete the corresponding element.
-                this.windowsField = compactedArrayRemove(this.windowsField, windowIdCopy);
-                sendToSharedStore(WindowUninitialized.make(windowIdCopy));
+                this.windowsField = Guifast.compactedArrayRemove(this.windowsField, windowIdCopy);
+                Guifast.sendToSharedRenderer(Guifast.WindowUninitialized.make(windowIdCopy));
             }
         );
 
@@ -133,18 +99,21 @@ export class Environment {
         window.loadURL('file://' + __dirname + "/.." + '/index.html');
     }
 
-    public dispatch(action: Action) {
+    public dispatch(action: Guifast.Action) {
         switch (action.type) {
-            case BackendInitialized.id: {
-                const backendInitialized = action as BackendInitialized.Action;
+            case Guifast.BackendInitialized.id: {
+                const backendInitialized = action as Guifast.BackendInitialized.Action;
 
-                this.guifastField = new Guifast(
-                    new ActionMapper(backendInitialized.action_mapper),
-                    new ModuleMapper(backendInitialized.module_mapper)
+                this.guifastField = new Guifast.Guifast(
+                    new Guifast.ActionMapper(backendInitialized.action_mapper),
+                    new Guifast.ModuleMapper(backendInitialized.module_mapper)
                 );
 
                 let numberOfWindows = 0;
                 let menuTemplate: Array<Electron.MenuItemOptions> = [];
+
+                const mainReducerModuleNames: Array<string> = [];
+                const mainReducerReducersAndStates: Guifast.StringMap<[Guifast.RequireInfo, any]> = { };
                 for (const module of backendInitialized.modules.modules) {
                     if (module.startup_windows !== null) {
                         numberOfWindows = numberOfWindows + module.startup_windows.length;
@@ -155,9 +124,14 @@ export class Environment {
                     }
 
                     if (module.main_reducer !== null) {
-                        this.mainReducersField[module.name] = fromRequireInfo<MainReducer>(module.main_reducer);
+                        const requiredMainReducer = Guifast.fromRequireInfo<Guifast.MainReducer>(module.main_reducer);
+                        const mainState = requiredMainReducer(undefined, undefined, undefined, this.mainStoreField, this.rendererStoreField.getState()!);
+
+                        mainReducerModuleNames.push(module.name);
+                        mainReducerReducersAndStates[module.name] = [module.main_reducer, mainState];
                     }
                 }
+                this.mainStoreField = { moduleNames: mainReducerModuleNames, reducersAndStates: mainReducerReducersAndStates };
 
                 if (menuTemplate.length > 0) {
                     const menu = electron.Menu.buildFromTemplate(menuTemplate);
@@ -168,70 +142,77 @@ export class Environment {
                     this.createWindow();
                 }
 
-                sendToSharedStore(action);
+                Guifast.sendToSharedRenderer(action);
                 break;
             }
 
-            case Command.id: {
-                sendToLibflo(action);
-                sendToSharedStore(action);
+            case Guifast.Command.id: {
+                Guifast.sendToLibflo(action);
+                Guifast.sendToSharedRenderer(action);
                 break;
             }
 
-            case ForwardAction.id: {
-                const forwardAction = action as ForwardAction.Action;
+            case Guifast.ForwardAction.id: {
+                const forwardAction = action as Guifast.ForwardAction.Action;
                 const forwardedAction = forwardAction.action;
                 const forwardedStrIdAction = environment.createStrIdAction(forwardedAction);
 
                 switch (forwardAction.destination) {
-                    case "Guifast": {
-                        sendToGuifast(forwardedStrIdAction);
+                    case "Main": {
+                        Guifast.sendToMain(forwardedStrIdAction);
                         break;
                     }
 
                     case "Libflo": {
-                        sendToLibflo(forwardedStrIdAction);
+                        Guifast.sendToLibflo(forwardedStrIdAction);
                         break;
                     }
 
-                    case "SharedStore": {
-                        sendToSharedStore(forwardedStrIdAction);
+                    case "SharedRenderer": {
+                        Guifast.sendToSharedRenderer(forwardedStrIdAction);
                         break;
                     }
 
                     default: {
                         const destination = forwardAction.destination;
-                        sendToStore(forwardedStrIdAction, destination.Store);
+                        Guifast.sendToRenderer(forwardedStrIdAction, destination.Renderer);
                         break;
                     }
                 }
                 break;
             }
 
-            case WindowInitialized.id: {
-                const windowInitialized = action as WindowInitialized.Action;
+            case Guifast.WindowInitialized.id: {
+                const windowInitialized = action as Guifast.WindowInitialized.Action;
                 this.windows.items[windowInitialized.windowId][1] = true;
-                sendToStore(ReconcileState.make(this.store.getState()), windowInitialized.windowId);
+                Guifast.sendToRenderer(Guifast.ReconcileState.make(this.rendererStore.getState()), windowInitialized.windowId);
                 break;
             }
 
-            case WindowRequested.id: {
-                const windowRequested = action as WindowRequested.Action;
+            case Guifast.WindowRequested.id: {
+                const windowRequested = action as Guifast.WindowRequested.Action;
                 this.createWindow();
-                sendToSharedStore(windowRequested);
+                Guifast.sendToSharedRenderer(windowRequested);
             }
         }
 
-        const state = this.store.getState()!;
-        for (const key in this.mainReducersField) {
-            const moduleState = state!.modulesState[key];
-            const reducer = this.mainReducersField[key];
-            reducer(moduleState, action, state);
+        const state = this.rendererStore.getState()!;
+        const newReducersAndStates: Guifast.StringMap<[Guifast.RequireInfo, any]> = { };
+        for (const moduleName of this.mainStoreField.moduleNames) {
+            const [mainReducerRequireInfo, mainState] = this.mainStoreField.reducersAndStates[moduleName];
+            let rendererReducerState: Guifast.RendererState | undefined = undefined;
+            if (state.rendererStates[moduleName] !== undefined) {
+                rendererReducerState = state.rendererStates[moduleName];
+            }
+            const mainReducer = Guifast.fromRequireInfo<Guifast.MainReducer>(mainReducerRequireInfo);
+            const newMainState = mainReducer(mainState, rendererReducerState, action, this.mainStoreField, state);
+            newReducersAndStates[moduleName] = [mainReducerRequireInfo, newMainState];
         }
+        this.mainStoreField = { ...this.mainStoreField, newReducersAndStates };
     }
 
     public start() {
-        setError((val: string) => console.log(val));
+        Guifast.setError((val: string) => console.log(val));
         this.tryLoadLibflo();
     }
 
@@ -240,15 +221,15 @@ export class Environment {
             value.onStdout.add(
                 e => {
                     try {
-                        const action = JSON.parse(e) as Action;
+                        const action = JSON.parse(e) as Guifast.Action;
                         const strIdAction = this.createStrIdAction(action);
                         this.dispatch(strIdAction);
                     } catch (e) {
-                        error(e);
+                        Guifast.error(e);
                     }
                 }
             );
-            value.onStderr.add(e => error(e))
+            value.onStderr.add(e => Guifast.error(e))
         }
         this.libfloClientField = value;
     }
@@ -258,7 +239,7 @@ export class Environment {
             return false;
         }
 
-        this.setLibfloClient(new LibfloClient(String.libfloPath));
+        this.setLibfloClient(new LibfloClient(Guifast.String.libfloPath));
         return true;
     }
 }
@@ -270,15 +251,15 @@ export const getEnvironment = (): Environment => {
 }
 
 // Sending
-setSendToGuifast((action: Action) => {
+Guifast.setSendToMain((action: Guifast.Action) => {
     getEnvironment().dispatch(action);
 });
 
-setSendToLibflo((action: Action) => {
+Guifast.setSendToLibflo((action: Guifast.Action) => {
     getEnvironment().libfloClient!.dispatch(action);
 });
 
-setSendToStore((action: Action, destination: number | undefined) => {
+Guifast.setSendToRenderer((action: Guifast.Action, destination: number | undefined) => {
     if (destination !== undefined) {
         const windowEntry = getEnvironment().windows.items[destination];
         if (windowEntry !== undefined) {
@@ -290,13 +271,13 @@ setSendToStore((action: Action, destination: number | undefined) => {
     }
 });
 
-setSendToSharedStore((action: Action) => {
+Guifast.setSendToSharedRenderer((action: Guifast.Action) => {
     const environment = getEnvironment();
-    getEnvironment().store.dispatch(action);
+    getEnvironment().rendererStore.dispatch(action);
 
-    let reconcileAction: Action | undefined = undefined;
+    let reconcileAction: Guifast.Action | undefined = undefined;
     if (environment.config !== undefined && environment.config.should_always_reconcile_stores) {
-        reconcileAction = ReconcileState.make(environment.store.getState());
+        reconcileAction = Guifast.ReconcileState.make(environment.rendererStore.getState());
     } else {
         reconcileAction = action;
     }
@@ -313,7 +294,7 @@ setSendToSharedStore((action: Action) => {
 
 // Receiving
 electron.ipcMain.on("", (_, e, id) => {
-    const action = e as Action;
+    const action = e as Guifast.Action;
     const strIdAction = getEnvironment().createStrIdAction(action);
     getEnvironment().dispatch(strIdAction)
 });

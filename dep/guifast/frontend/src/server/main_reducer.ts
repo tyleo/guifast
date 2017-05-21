@@ -1,13 +1,17 @@
 import * as Guifast from "guifast_shared";
 import * as GuifastAction from "guifast_shared/action";
-import { GuifastState } from "guifast/client/state";
+import { GuifastRendererState } from "guifast/client/state";
 
 export const mainReducer = (
-    state: GuifastState,
+    mainState: undefined,
+    rendererState: GuifastRendererState,
     action: Guifast.Action = Guifast.UndefinedAction.make(),
-    allState: Guifast.State
-) => {
+    rootMainState: Guifast.RootMainState,
+    rootRendererState: Guifast.RootRendererState
+): any => {
     switch (action.type) {
         
     }
+
+    return undefined;
 };

@@ -1,7 +1,7 @@
-import { RequireInfo } from "guifast_shared";
+import * as Guifast from "guifast_shared";
 
 export interface UberPanelState {
-    readonly component?: RequireInfo;
+    readonly component?: Guifast.RequireInfo;
     readonly children: Array<number>;
     readonly id: number;
 }

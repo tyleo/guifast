@@ -5,21 +5,7 @@ import ReactDom from "guifast_shared/node_module/react_dom"
 import Redux from "guifast_shared/node_module/redux";
 import { getRootStore, getWindowId, setRootStore } from "guifast/client";
 import { GuifastComponent } from "guifast/client/component";
-import {
-    Action,
-    error,
-    ForwardAction,
-    sendToGuifast,
-    sendToLibflo,
-    sendToSharedStore,
-    sendToStore,
-    reducer,
-    setError,
-    setSendToGuifast,
-    setSendToLibflo,
-    setSendToStore,
-    setSendToSharedStore
-} from "guifast_shared";
+import * as Guifast from "guifast_shared";
 
 import { WindowInitialized } from "guifast_shared/action/window_initialized";
 
@@ -38,11 +24,11 @@ installExtension(REDUX_DEVTOOLS)
     .then(name => console.log('Added redux extension.'))
     .catch(err => console.log('Error installing redux extension: ', err));
 
-setError(message => console.log(message));
+Guifast.setError(message => console.log(message));
 
 setRootStore(
     Redux.createStore(
-        reducer,
+        Guifast.rootRendererReducer,
         (window as any).__REDUX_DEVTOOLS_EXTENSION__ && (window as any).__REDUX_DEVTOOLS_EXTENSION__()
     )
 );
@@ -55,21 +41,21 @@ ReactDom.render(
 );
 
 // Sending
-setSendToGuifast((action: Action) => electron.ipcRenderer.send("", action, getWindowId()));
-setSendToLibflo((action: Action) => electron.ipcRenderer.send("", ForwardAction.make(action, "Libflo"), getWindowId()));
-setSendToSharedStore((action: Action) => electron.ipcRenderer.send("", ForwardAction.make(action, "SharedStore"), getWindowId()));
-setSendToStore(
-    (action: Action, destination: number | undefined = undefined) => {
+Guifast.setSendToMain((action: Guifast.Action) => electron.ipcRenderer.send("", action, getWindowId()));
+Guifast.setSendToLibflo((action: Guifast.Action) => electron.ipcRenderer.send("", Guifast.ForwardAction.make(action, "Libflo"), getWindowId()));
+Guifast.setSendToSharedRenderer((action: Guifast.Action) => electron.ipcRenderer.send("", Guifast.ForwardAction.make(action, "SharedRenderer"), getWindowId()));
+Guifast.setSendToRenderer(
+    (action: Guifast.Action, destination: number | undefined = undefined) => {
         if (destination === undefined || destination === getWindowId()) {
             getRootStore()!.dispatch(action);
         } else {
-            electron.ipcRenderer.send("", ForwardAction.make(action, { Store: destination }), getWindowId());
+            electron.ipcRenderer.send("", Guifast.ForwardAction.make(action, { Renderer: destination }), getWindowId());
         }
     }
 );
 
 // Receiving
-electron.ipcRenderer.on("shared_store", (_, e) => sendToStore(e, undefined));
-electron.ipcRenderer.on("store", (_, e) => sendToStore(e as Action, undefined));
+electron.ipcRenderer.on("shared_store", (_, e) => Guifast.sendToRenderer(e, undefined));
+electron.ipcRenderer.on("store", (_, e) => Guifast.sendToRenderer(e as Guifast.Action, undefined));
 
-sendToGuifast(WindowInitialized.make(getWindowId()));
+Guifast.sendToMain(WindowInitialized.make(getWindowId()));

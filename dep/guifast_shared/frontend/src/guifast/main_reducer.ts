@@ -1,3 +1,3 @@
-import { Action, Fn3, ModuleState, State } from "guifast_shared";
+import * as Guifast from "guifast_shared";
 
-export type MainReducer = Fn3<void, ModuleState, Action | undefined, State>;
+export type MainReducer = Guifast.Fn5<any | undefined, any | undefined, Guifast.RendererState | undefined, Guifast.Action | undefined, Guifast.RootMainState, Guifast.RootRendererState>;

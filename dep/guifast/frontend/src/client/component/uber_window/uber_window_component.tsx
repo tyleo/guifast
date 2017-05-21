@@ -1,10 +1,10 @@
 import React from "guifast_shared/node_module/react";
-import { getWindowId } from "guifast/client";
+import * as GuifastClient from "guifast/client";
 import { UberWindowCss, UberWindowProps } from "guifast/client/component";
-import { Component, fromRequireInfo, State, UberPanelState } from "guifast_shared";
+import * as Guifast from "guifast_shared";
 
-function renderUberPanel(state: State, uberPanelId: number) {
-    const uberPanelState = state.uberPanelsState.items[uberPanelId]!;
+function renderUberPanel(state: Guifast.RootRendererState, uberPanelId: number) {
+    const uberPanelState = state.uberPanelStates.items[uberPanelId]!;
 
     const result = new Array<any>();
     if (uberPanelState.component === undefined) {
@@ -13,7 +13,7 @@ function renderUberPanel(state: State, uberPanelId: number) {
         }
     } else {
         const componentInfo = uberPanelState.component;
-        const component = fromRequireInfo<Component>(componentInfo);
+        const component = Guifast.fromRequireInfo<Guifast.Component>(componentInfo);
         result.push(
             <div style={{ height: "100%", width: "100%" }} key={ uberPanelId }>{ component(state) }</div>
         );
@@ -23,7 +23,7 @@ function renderUberPanel(state: State, uberPanelId: number) {
 
 export const UberWindowComponent = (props: UberWindowProps) => {
     if (props.state.isInitialized) {
-        const uberWindowState = props.state.uberWindowsState.items[getWindowId()]!;
+        const uberWindowState = props.state.uberWindowStates.items[GuifastClient.getWindowId()]!;
         return (
             <div style={ new UberWindowCss() }>
                 { renderUberPanel(props.state, uberWindowState.uberPanelId) }

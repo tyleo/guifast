@@ -1,11 +1,11 @@
 import ReactRedux from "guifast_shared/node_module/react_redux";
-import { reducer, State } from "guifast_shared";
+import * as Guifast from "guifast_shared";
 import { UberWindowComponent } from "guifast/client/component/uber_window/uber_window_component";
 import { UberWindowProps } from "guifast/client/component";
 
-const mapStateToProps = (state: State): UberWindowProps => {
+const mapStateToProps = (state: Guifast.RootRendererState): UberWindowProps => {
     if (!state) {
-        state = reducer(undefined, undefined);
+        state = Guifast.rootRendererReducer(undefined, undefined);
     }
 
     return { state: state };

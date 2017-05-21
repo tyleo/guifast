@@ -1,8 +1,8 @@
-import { Action, InitializeModule, State, UndefinedAction } from "guifast_shared";
+import * as Guifast from "guifast_shared";
 import { commandWindowReducer } from "guifast/client/renderer_reducer";
-import { GuifastState } from "guifast/client/state";
+import { GuifastRendererState } from "guifast/client/state";
 
-const noop = (state: GuifastState, action: Action): GuifastState => {
+const noop = (state: GuifastRendererState, action: Guifast.Action): GuifastRendererState => {
     return {
         ...state,
         reducer: state.reducer,
@@ -11,13 +11,13 @@ const noop = (state: GuifastState, action: Action): GuifastState => {
 };
 
 export function rendererReducer(
-    state: GuifastState | undefined,
-    action: Action = UndefinedAction.make(),
-    guifastState: State
-): GuifastState {
+    state: GuifastRendererState | undefined,
+    action: Guifast.Action = Guifast.UndefinedAction.make(),
+    guifastState: Guifast.RootRendererState
+): GuifastRendererState {
     switch (action.type) {
-        case InitializeModule.id: {
-            const initializeModule = action as InitializeModule.Action;
+        case Guifast.InitializeModule.id: {
+            const initializeModule = action as Guifast.InitializeModule.Action;
             return {
                 reducer: initializeModule.reducer,
                 commandWindowState: commandWindowReducer(undefined, undefined),

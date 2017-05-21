@@ -1,9 +1,9 @@
-import { Module, ModulesSerde } from "guifast_shared";
+import * as Guifast from "guifast_shared";
 
 export class Modules {
-    public readonly modules: Array<Module> = [];
+    public readonly modules: Array<Guifast.Module> = [];
 
-    public constructor(modulesSerde: ModulesSerde) {
+    public constructor(modulesSerde: Guifast.ModulesSerde) {
         let index = 0;
         for (const module of modulesSerde.modules) {
             this.modules.push({

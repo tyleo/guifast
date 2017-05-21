@@ -1,10 +1,10 @@
-import { ModuleMapperSerde, StringMap } from "guifast_shared";
+import * as Guifast from "guifast_shared";
 
 export class ModuleMapper {
-    public readonly moduleMap: StringMap<number>;
+    public readonly moduleMap: Guifast.StringMap<number>;
     public readonly moduleList: Array<string>;
 
-    public constructor(moduleMapperSerde: ModuleMapperSerde) {
+    public constructor(moduleMapperSerde: Guifast.ModuleMapperSerde) {
         this.moduleMap = moduleMapperSerde.module_map;
         this.moduleList = moduleMapperSerde.module_list;
     }
@@ -17,7 +17,7 @@ export class ModuleMapper {
         return this.moduleList[moduleId];
     }
 
-    public makeSerde(): ModuleMapperSerde {
+    public makeSerde(): Guifast.ModuleMapperSerde {
         return {
             module_map: this.moduleMap,
             module_list: this.moduleList

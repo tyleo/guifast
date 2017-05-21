@@ -1,19 +1,19 @@
-import { ActionMapper, ExtActionMapper, ModuleMapper } from "guifast_shared";
+import * as GuifastImport from "guifast_shared";
 
 export class Guifast {
-    private readonly actionMapperField: ActionMapper;
-    private readonly moduleMapperField: ModuleMapper;
+    private readonly actionMapperField: GuifastImport.ActionMapper;
+    private readonly moduleMapperField: GuifastImport.ModuleMapper;
 
-    public constructor(actionMapper: ActionMapper, moduleMapper: ModuleMapper) {
+    public constructor(actionMapper: GuifastImport.ActionMapper, moduleMapper: GuifastImport.ModuleMapper) {
         this.actionMapperField = actionMapper;
         this.moduleMapperField = moduleMapper;
     }
 
-    public get actionMapper(): ExtActionMapper {
-        return new ExtActionMapper(this.actionMapperField, this.moduleMapperField);
+    public get actionMapper(): GuifastImport.ExtActionMapper {
+        return new GuifastImport.ExtActionMapper(this.actionMapperField, this.moduleMapperField);
     }
 
-    public get moduleMapper(): ModuleMapper {
+    public get moduleMapper(): GuifastImport.ModuleMapper {
         return this.moduleMapperField;
     }
 }

@@ -1,10 +1,10 @@
-import { ActionInfo, ActionMapper, ActionMapperSerde, mapNumberOrString, ModuleMapper, NumberOrString } from "guifast_shared";
+import * as Guifast from "guifast_shared";
 
 export class ExtActionMapper {
-    private readonly actionMapper: ActionMapper;
-    private readonly moduleMapper: ModuleMapper;
+    private readonly actionMapper: Guifast.ActionMapper;
+    private readonly moduleMapper: Guifast.ModuleMapper;
 
-    public constructor(actionMapper: ActionMapper, moduleMapper: ModuleMapper) {
+    public constructor(actionMapper: Guifast.ActionMapper, moduleMapper: Guifast.ModuleMapper) {
         this.actionMapper = actionMapper;
         this.moduleMapper = moduleMapper;
     }
@@ -18,12 +18,12 @@ export class ExtActionMapper {
         return this.get(moduleIndex, actionName);
     }
 
-    public getInfo(actionId: number): ActionInfo {
+    public getInfo(actionId: number): Guifast.ActionInfo {
         return this.actionMapper.getInfo(actionId);
     }
 
-    public getTypeString(actionType: NumberOrString): string {
-        return mapNumberOrString(
+    public getTypeString(actionType: Guifast.NumberOrString): string {
+        return Guifast.mapNumberOrString(
             actionType,
             (actionId: number) => {
                 const actionInfo = this.getInfo(actionId);
@@ -34,7 +34,7 @@ export class ExtActionMapper {
         );
     }
 
-    public makeSerde(): ActionMapperSerde {
+    public makeSerde(): Guifast.ActionMapperSerde {
         return this.actionMapper.makeSerde();
     }
 }

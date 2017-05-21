@@ -1,10 +1,10 @@
-import { ActionInfo, ActionMapperSerde, StringMap } from "guifast_shared";
+import * as Guifast from "guifast_shared";
 
 export class ActionMapper {
-    public readonly actionMap: Array<StringMap<number> | undefined>;
-    public readonly actionList: Array<ActionInfo>;
+    public readonly actionMap: Array<Guifast.StringMap<number> | undefined>;
+    public readonly actionList: Array<Guifast.ActionInfo>;
 
-    public constructor(actionMapperSerde: ActionMapperSerde) {
+    public constructor(actionMapperSerde: Guifast.ActionMapperSerde) {
         this.actionMap = actionMapperSerde.action_map.map(
             map => {
                 if (map === null) {
@@ -25,11 +25,11 @@ export class ActionMapper {
         return this.actionMap[moduleId]![actionName]!;
     }
 
-    public getInfo(actionId: number): ActionInfo {
+    public getInfo(actionId: number): Guifast.ActionInfo {
         return this.actionList[actionId]!;
     }
 
-    public makeSerde(): ActionMapperSerde {
+    public makeSerde(): Guifast.ActionMapperSerde {
         const actionMap = this.actionMap.map(
             map => {
                 if (map === undefined) {

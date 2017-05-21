@@ -1,1 +1,1 @@
-export type ActionLocation = "Guifast" | "Libflo" | "SharedStore" | { Store: number };
+export type ActionLocation = "Main" | "Libflo" | "SharedRenderer" | { Renderer: number };

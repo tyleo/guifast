@@ -1,5 +1,5 @@
-import { RequireInfo } from "guifast_shared";
+import * as Guifast from "guifast_shared";
 
-export function fromRequireInfo<T>(value: RequireInfo): T {
+export function fromRequireInfo<T>(value: Guifast.RequireInfo): T {
     return require(value.path)[value.name] as T;
 };

@@ -1,9 +1,9 @@
-import { ComponentInfo, RequireInfo } from "guifast_shared";
+import * as Guifast from "guifast_shared";
 
 export interface Module {
-    components: Array<ComponentInfo>;
+    components: Array<Guifast.ComponentInfo>;
     name: string;
-    mainReducer: RequireInfo | undefined;
-    rendererReducer: RequireInfo | undefined;
+    mainReducer: Guifast.RequireInfo | undefined;
+    rendererReducer: Guifast.RequireInfo | undefined;
     startupWindows: Array<string> | null;
 }

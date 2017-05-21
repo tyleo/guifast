@@ -1,4 +1,3 @@
-import { Action, BackendInitialized, compactedArray, compactedArrayAdd, fromRequireInfo, InitializeModule, ModuleReducer, Modules, ModuleState, ReconcileState, RequireInfo, State, StringMap, uberPanelsReducer, UberPanelState, uberWindowsReducer, UberWindowState, UndefinedAction } from "guifast_shared";
 import * as Guifast from "guifast_shared";
 
 type UberPanelsState = Guifast.CompactedArray<Guifast.UberPanelState>;
@@ -22,7 +21,7 @@ const addWindow = (
         }
     );
 
-    const uberWindowsResult = compactedArrayAdd(
+    const uberWindowsResult = Guifast.compactedArrayAdd(
         uberWindows,
         (id: number) => {
             return {
@@ -68,33 +67,33 @@ const removeWindow = (
     }
 };
 
-export const reducer = (
-    state: State = {
+export const rootRendererReducer = (
+    state: Guifast.RootRendererState = {
         config: undefined,
         components: { },
         isInitialized: false,
-        modulesState: { },
-        uberPanelsState: uberPanelsReducer(undefined, undefined),
-        uberWindowsState: uberWindowsReducer(undefined, undefined),
+        rendererStates: { },
+        uberPanelStates: Guifast.uberPanelsReducer(undefined, undefined),
+        uberWindowStates: Guifast.uberWindowsReducer(undefined, undefined),
     },
-    action: Action = UndefinedAction.make(),
-): State => {
+    action: Guifast.Action = Guifast.UndefinedAction.make(),
+): Guifast.RootRendererState => {
     switch (action.type) {
-        case BackendInitialized.id: {
-            const backendInitialized = action as BackendInitialized.Action;
-            const modules = new Modules(backendInitialized.modules);
+        case Guifast.BackendInitialized.id: {
+            const backendInitialized = action as Guifast.BackendInitialized.Action;
+            const modules = new Guifast.Modules(backendInitialized.modules);
 
-            let modulesState: StringMap<ModuleState> = { };
-            let uberPanelsState = compactedArray<UberPanelState>();
-            let uberWindowsState = compactedArray<UberWindowState>();
+            let modulesState: Guifast.StringMap<Guifast.RendererState> = { };
+            let uberPanelsState = Guifast.compactedArray<Guifast.UberPanelState>();
+            let uberWindowsState = Guifast.compactedArray<Guifast.UberWindowState>();
 
-            const components: StringMap<RequireInfo> = { };
+            const components: Guifast.StringMap<Guifast.RequireInfo> = { };
             const startupWindowNames = new Array<string>();
             for (const module of modules.modules) {
                 if (module.rendererReducer !== undefined) {
-                    const reducer = fromRequireInfo<ModuleReducer>(module.rendererReducer);
+                    const reducer = Guifast.fromRequireInfo<Guifast.RendererReducer>(module.rendererReducer);
                     const moduleState = { reducer: module.rendererReducer };
-                    const initializeModuleAction = InitializeModule.make(module.rendererReducer);
+                    const initializeModuleAction = Guifast.InitializeModule.make(module.rendererReducer);
                     modulesState[module.name] = reducer(moduleState, initializeModuleAction, state);
                 }
 
@@ -118,58 +117,58 @@ export const reducer = (
                 config: backendInitialized.config,
                 components: components,
                 isInitialized: true,
-                modulesState: modulesState,
-                uberPanelsState: uberPanelsState,
-                uberWindowsState: uberWindowsState
+                rendererStates: modulesState,
+                uberPanelStates: uberPanelsState,
+                uberWindowStates: uberWindowsState
             };
         }
 
-        case ReconcileState.id: {
-            const reconcileState = action as ReconcileState.Action;
+        case Guifast.ReconcileState.id: {
+            const reconcileState = action as Guifast.ReconcileState.Action;
             return reconcileState.state;
         }
 
         case Guifast.WindowRequested.id: {
             const windowRequested = action as Guifast.WindowRequested.Action;
             const rootComponent = state.components[windowRequested.rootComponent];
-            const addWindowResult = addWindow(rootComponent, state.uberPanelsState, state.uberWindowsState);
+            const addWindowResult = addWindow(rootComponent, state.uberPanelStates, state.uberWindowStates);
 
             return {
                 ...state,
-                uberPanelsState: addWindowResult[0],
-                uberWindowsState: addWindowResult[1]
+                uberPanelStates: addWindowResult[0],
+                uberWindowStates: addWindowResult[1]
             };
         }
 
         case Guifast.WindowUninitialized.id: {
             const windowUninitialized = action as Guifast.WindowUninitialized.Action;
-            const [uberPanelsState, uberWindowsState] = removeWindow(windowUninitialized.windowId, state.uberPanelsState, state.uberWindowsState);
+            const [uberPanelStates, uberWindowStates] = removeWindow(windowUninitialized.windowId, state.uberPanelStates, state.uberWindowStates);
 
             return {
                 ...state,
-                uberPanelsState: uberPanelsState,
-                uberWindowsState: uberWindowsState
+                uberPanelStates: uberPanelStates,
+                uberWindowStates: uberWindowStates
             };
         }
 
         default: {
-            let modulesState: StringMap<ModuleState> = { };
-            for (const key in state.modulesState) {
-                const moduleState = state.modulesState[key];
-                const reducer = fromRequireInfo<ModuleReducer>(moduleState.reducer);
-                modulesState[key] = reducer(moduleState, action, state);
+            let rendererStates: Guifast.StringMap<Guifast.RendererState> = { };
+            for (const key in state.rendererStates) {
+                const moduleState = state.rendererStates[key];
+                const reducer = Guifast.fromRequireInfo<Guifast.RendererReducer>(moduleState.reducer);
+                rendererStates[key] = reducer(moduleState, action, state);
             }
 
-            const uberPanelsState = uberPanelsReducer(state.uberPanelsState, action);
-            const uberWindowsState = uberWindowsReducer(state.uberWindowsState, action);
+            const uberPanelStates = Guifast.uberPanelsReducer(state.uberPanelStates, action);
+            const uberWindowStates = Guifast.uberWindowsReducer(state.uberWindowStates, action);
 
             return {
                 config: state.config,
                 components: state.components,
                 isInitialized: state.isInitialized,
-                modulesState: modulesState,
-                uberPanelsState: uberPanelsState,
-                uberWindowsState: uberWindowsState
+                rendererStates: rendererStates,
+                uberPanelStates: uberPanelStates,
+                uberWindowStates: uberWindowStates
             };
         }
     }

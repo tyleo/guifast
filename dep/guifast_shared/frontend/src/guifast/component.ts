@@ -1,3 +1,3 @@
-import { Fn1, State } from "guifast_shared";
+import * as Guifast from "guifast_shared";
 
-export type Component = Fn1<any, State>;
+export type Component = Guifast.Fn1<any, Guifast.RootRendererState>;
