@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+      <meta charset="UTF-8">
+      <title>guifast</title>
+    </head>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0px auto;
+            padding: 0px auto;
+        }
+        .bodyDiv {
+            height: auto;
+            min-height: 100%;
+        }
+    </style>
+    <body bgcolor="#FFFFFF">
+        <div class="bodyDiv" id="guifast"/>
+        <!--Hack because typescript expects exports in run.js-->
+        <script> const exports = {}; </script>
+        <script src="run.js"></script>
+    </body>
+</html>

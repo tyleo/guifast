@@ -1,11 +1,11 @@
-import { ClientEvent, Fn1, indexer, Indexer, indexerReleaseIndex, indexerTakeNextIndex } from "guifast_shared";
+import * as Guifast from "guifast_shared";
 
-export class Event<T> implements ClientEvent<T> {
-    private readonly handlers: Array<Fn1<void, T> | undefined> = [];
-    private indexer: Indexer = indexer();
+export class Event<T> implements Guifast.ClientEvent<T> {
+    private readonly handlers: Array<Guifast.Fn1<void, T> | undefined> = [];
+    private indexer: Guifast.Indexer = Guifast.indexer();
 
-    public add(handler: Fn1<void, T>): number {
-        const [indexer, index] = indexerTakeNextIndex(this.indexer);
+    public add(handler: Guifast.Fn1<void, T>): number {
+        const [indexer, index] = Guifast.indexerTakeNextIndex(this.indexer);
         this.handlers[index] = handler;
         this.indexer = indexer;
         return index;
@@ -21,7 +21,7 @@ export class Event<T> implements ClientEvent<T> {
 
     public remove(id: number) {
         this.handlers[id] = undefined;
-        const indexer = indexerReleaseIndex(this.indexer, id);
+        const indexer = Guifast.indexerReleaseIndex(this.indexer, id);
         this.indexer = indexer;
     }
 }

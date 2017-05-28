@@ -1,11 +1,10 @@
 {
     "components": [
         {
-            "require_info": { "name": "CommandWindowGuifastContainer", "path": "guifast/guifast/client/component/command_window_guifast_container/command_window_guifast_container.js" },
-            "name": "command_window_guifast_container"
+            "require_info": { "name": "CommandWindowContainer", "path": "guifast/guifast/command_window/component/command_window_container.js" },
+            "name": "command_window_container"
         }
     ],
-    "main_reducer": { "name": "mainReducer", "path": "guifast/guifast/server/main_reducer.js" },
-    "renderer_reducer": { "name": "rendererReducer", "path": "guifast/guifast/client/renderer_reducer/renderer_reducer.js" },
-    "startup_windows": [ "guifast command_window_guifast_container" ]
+    "renderer_reducer": { "name": "commandWindowReducer", "path": "guifast/guifast/command_window/command_window_reducer.js" },
+    "startup_windows": [ "guifast command_window_container" ]
 }

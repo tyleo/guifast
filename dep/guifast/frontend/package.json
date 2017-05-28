@@ -2,11 +2,11 @@
   "name": "guifast",
   "version": "0.1.0",
   "description": "Provides typescript frontends for libflo.",
-  "main": "src/main.js",
+  "main": "src/main/run.js",
   "target": "es6",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "electron src/main.js"
+    "start": "electron src/main/run.js"
   },
   "keywords": [
     "guifast",

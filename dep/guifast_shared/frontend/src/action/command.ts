@@ -1,17 +1,14 @@
-import { Action as ActionBase, actionStrId, String } from "guifast_shared";
+import * as Guifast from "guifast_shared";
 
 export namespace Command {
-    export const str = "command";
-    export const id = actionStrId(String.module, str);
+    const str = "command";
+    export const id = Guifast.makeStrId(Guifast.String.module, str);
 
-    export interface Action extends ActionBase {
+    export interface Action extends Guifast.Action {
         readonly data: string;
     }
 
     export const make = (data: string): Action => {
-        return {
-            type: id,
-            data: data
-        };
+        return { type: id, data: data };
     };
 }

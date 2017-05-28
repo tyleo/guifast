@@ -1,7 +1,7 @@
-import { CompactedArray, Fn1, indexerReleaseIndex } from "guifast_shared";
+import * as Guifast from "guifast_shared";
 
-export function compactedArrayRemove<T>(state: CompactedArray<T>, index: number): CompactedArray<T> {
-    const indexer = indexerReleaseIndex(state.indexer, index);
+export function compactedArrayRemove<T>(state: Guifast.CompactedArray<T>, index: number): Guifast.CompactedArray<T> {
+    const indexer = Guifast.indexerReleaseIndex(state.indexer, index);
     const items = [...state.items];
     items[index] = undefined;
 

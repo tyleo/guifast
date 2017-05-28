@@ -1,10 +1,10 @@
-import { Fn1 } from "guifast_shared";
+import * as Guifast from "guifast_shared";
 
 export class EventDecay<T> {
-    private handlers: Fn1<void, T>[];
+    private handlers: Guifast.Fn1<void, T>[];
     private count: number;
 
-    public constructor(handlers: Fn1<void, T>[], count: number = 1) {
+    public constructor(handlers: Guifast.Fn1<void, T>[], count: number = 1) {
         this.handlers = handlers;
         this.count = count;
     }

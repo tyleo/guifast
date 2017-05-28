@@ -7,6 +7,6 @@ use serialization::ActionLocation;
 
 pub unsafe fn send_to_store<T>(action: &T, id: usize) -> Result<()>
     where T: Action + Serialize {
-    let action = ForwardAction::new(action, ActionLocation::Store(id));
+    let action = ForwardAction::new(action, ActionLocation::Renderer(id));
     send_to_guifast(&action)
 }

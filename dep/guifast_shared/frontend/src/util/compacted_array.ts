@@ -1,13 +1,13 @@
-import { indexer, Indexer } from "guifast_shared";
+import * as Guifast from "guifast_shared";
 
 export interface CompactedArray<T> {
-    readonly indexer: Indexer;
+    readonly indexer: Guifast.Indexer;
     readonly items: Array<T | undefined>;
 }
 
 export function compactedArray<T>(): CompactedArray<T> {
     return {
-        indexer: indexer(),
+        indexer: Guifast.indexer(),
         items: new Array<T>()
     };
 };

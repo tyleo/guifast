@@ -1,3 +1,3 @@
-import { MAX_CONTINUOUS_INT } from "guifast_shared";
+import * as Guifast from "guifast_shared";
 
-export const MAX_INDEX: number = MAX_CONTINUOUS_INT;
+export const MAX_INDEX: number = Guifast.MAX_CONTINUOUS_INT;

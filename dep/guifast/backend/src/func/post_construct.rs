@@ -1,5 +1,5 @@
 use { guifast_shared };
-use guifast_shared::action::BackendInitialized;
+use guifast_shared::action::LibfloInitialized;
 use guifast_shared::CONFIG;
 use guifast_shared::error::*;
 use guifast_shared::file_funcs;
@@ -39,7 +39,7 @@ pub unsafe extern fn post_construct() -> FuncResult<()> {
             }
             let guifast_serde = ModulesSerde::new(result_guifast_modules);
 
-            let backend_initialized = BackendInitialized::new(action_mapper.make_serde(), &config_serde, module_mapper.make_serde(), guifast_serde);
+            let backend_initialized = LibfloInitialized::new(action_mapper.make_serde(), &config_serde, module_mapper.make_serde(), guifast_serde);
             guifast_shared::send_to_guifast(&backend_initialized)?;
             Ok(())
         }

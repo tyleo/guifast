@@ -1,6 +1,6 @@
-import { Indexer } from "guifast_shared";
+import * as Guifast from "guifast_shared";
 
-export const indexerTakeNextIndex = (state: Indexer): [Indexer, number] => {
+export const indexerTakeNextIndex = (state: Guifast.Indexer): [Guifast.Indexer, number] => {
     if (state.freeIndices.length === 0) {
         return [
             {

@@ -1,7 +1,3 @@
-pub fn backend_initialized_action() -> &'static str {
-    "backend_initialized"
-}
-
 pub fn command() -> &'static str {
     "command"
 }
@@ -16,6 +12,10 @@ pub fn guifast_config_file() -> &'static str {
 
 pub fn guifast_file() -> &'static str {
     "guifast.json"
+}
+
+pub fn libflo_initialized_action() -> &'static str {
+    "libflo_initialized"
 }
 
 pub fn module() -> &'static str {

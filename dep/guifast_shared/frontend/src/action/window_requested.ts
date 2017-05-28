@@ -1,8 +1,8 @@
 import * as Guifast from "guifast_shared";
 
 export namespace WindowRequested {
-    export const str = "window_requested";
-    export const id = Guifast.actionStrId(Guifast.String.module, str);
+    const str = "window_requested";
+    export const id = Guifast.makeStrId(Guifast.String.module, str);
 
     export interface Action extends Guifast.Action {
         readonly rootComponent: string;

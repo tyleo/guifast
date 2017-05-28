@@ -1,7 +1,7 @@
 import * as Guifast from "guifast_shared";
 
 let sendToRendererInternal: Guifast.Fn2<void, Guifast.Action, number | undefined> | undefined;
-export const sendToRenderer = (action: Guifast.Action, storeId: number | undefined) => {
+export const sendToRenderer = (action: Guifast.Action, storeId: number | undefined = undefined) => {
     if (sendToRendererInternal !== undefined) {
         sendToRendererInternal(action, storeId);
     } else {
